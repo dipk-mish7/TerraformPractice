@@ -20,7 +20,7 @@ resource "aws_subnet" "subnets_tf" {
   vpc_id = aws_vpc.ntiervpc.id
   availability_zone = "${var.region}${count.index%2 == 0 ? "a":"b"}"
   tags = {
-    "Name" = var.subnets[count.index]
+    "Name" = local.subnets[count.index]
   }
 
   depends_on = [
