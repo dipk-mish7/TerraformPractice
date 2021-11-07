@@ -16,12 +16,16 @@ resource "aws_vpc" "ntiervpc" {
 
 resource "aws_subnet" "subnets_tf" {
   count = 6
-  cidr_block = var.cidrranges[count.index]
+  cidr_block = cidrsubnet(var.vpccidr,8,count.index)
   vpc_id = aws_vpc.ntiervpc.id
   availability_zone = var.subnets-azs[count.index]
 
   tags = {
     "Name" = var.subnets[count.index]
   }
+
+  depends_on = [
+    aws_vpc.ntiervpc
+  ]
   
 }
