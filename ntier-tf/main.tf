@@ -28,3 +28,19 @@ resource "aws_subnet" "subnets_tf" {
   ]
   
 }
+
+#creating igw
+
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.ntiervpc.id
+
+  tags = {
+    "Name" = local.igw_ntier
+  }
+
+  depends_on = [
+    aws_vpc.ntiervpc
+  ]
+
+  
+}
