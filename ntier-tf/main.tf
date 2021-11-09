@@ -43,7 +43,7 @@ resource "aws_internet_gateway" "igw" {
   ]
 }
 
-#creating route table
+#creating route public table
 
 resource "aws_route_table" "publicroutetable" {
 
@@ -51,6 +51,9 @@ resource "aws_route_table" "publicroutetable" {
   route {
     cidr_block = local.anywhere
     gateway_id = aws_internet_gateway.igw.id
+  }
+  tags = {
+    "Name" = "PublicRT"
   }
 
   depends_on = [
@@ -73,6 +76,34 @@ resource "aws_route_table_association" "websubnets" {
     aws_route_table.publicroutetable
   ]
 
+}
 
+#creating private route table
+  
+resource "aws_route_table" "private_routetable" {
 
+  vpc_id = aws_vpc.ntiervpc.id
+  tags = {
+    "Name" = "PrivateRouteTable"
+  }
+
+  depends_on = [
+    aws_vpc.ntiervpc,
+    aws_subnet.subnets_tf[2],
+    aws_subnet.subnets_tf[3],
+    aws_subnet.subnets_tf[4],
+    aws_subnet.subnets_tf[5]
+  ]
+
+}
+
+#creating private route table association 
+resource "aws_route_table_association" "appdbsubnets" {
+  count = 4
+  subnet_id = aws_subnet.subnets_tf[count.index+2].id
+  route_table_id = aws_route_table.private_routetable.id
+
+  depends_on = [
+    aws_route_table.private_routetable
+  ]
 }
