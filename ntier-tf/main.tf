@@ -41,6 +41,38 @@ resource "aws_internet_gateway" "igw" {
   depends_on = [
     aws_vpc.ntiervpc
   ]
+}
 
-  
+#creating route table
+
+resource "aws_route_table" "publicroutetable" {
+
+  vpc_id = aws_vpc.ntiervpc.id
+  route {
+    cidr_block = local.anywhere
+    gateway_id = aws_internet_gateway.igw.id
+  }
+
+  depends_on = [
+    aws_vpc.ntiervpc,
+    aws_subnet.subnets_tf[0],
+    aws_subnet.subnets_tf[1]
+  ]
+}
+
+#creating routetable association.
+
+resource "aws_route_table_association" "websubnets" {
+
+  count = 2
+
+  subnet_id = aws_subnet.subnets_tf[count.index].id
+  route_table_id = aws_route_table.publicroutetable.id
+
+  depends_on = [
+    aws_route_table.publicroutetable
+  ]
+
+
+
 }
